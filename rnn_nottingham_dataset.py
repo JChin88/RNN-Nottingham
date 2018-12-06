@@ -32,19 +32,18 @@ def createMidiFileBeats(filename, output, tpb):
     return reconstructFromBeats(filename, sequence, tpb)
 
 def createMidiFileNotes(filename, output, tpb):
+    """Uncomment print statements to view output sequence"""
+    print('\nSequence for %s' % filename)
     sequence = []
     for out in output:
         o = out[0]
         note = [i for i, j in enumerate(o[:12]) if j == max(o[:12])][0]
         pitch = [i for i, j in enumerate(o[12:22]) if j == max(o[12:22])][0]
-        length = [i for i, j in enumerate(o[22:]) if j == max(o[22:])][0]
-
-        """Uncomment print statements to view output sequence"""
-        # print('Sequence for %s' % filename)
-        # print((pitch*12 + note, 90, length))
+        length = [i for i, j in enumerate(o[22:]) if j == max(o[22:])][0]        
+        
+        print((pitch*12 + note, 90, length))
 
         sequence += [(pitch*12 + note, 90, length)]
-    # print('\n')
     return reconstruct(filename, sequence, tpb)
 
 def constructTensorFromMidiBeats(filename):
@@ -88,7 +87,7 @@ optimizer = optim.Adam(rnn.parameters(), lr = learning_rate)
 
 start = time.time()
 
-def train(filenames, numEpochs = 10):
+def train(filenames, numEpochs = 50):
     for f in filenames:
         print('Training on file: %s' % f)
         sequence = constructTensorFromMidiNotes(f)
@@ -99,7 +98,7 @@ def train(filenames, numEpochs = 10):
             rnn.zero_grad()
             output = torch.rand(1, 1, 30)
             for j in range(sequence.size()[0]):
-                output = torch.cat((output, rnn(sequence[j]).view(1, 1, 30)))
+                output = torch.cat((output, rnn(torch.rand(1, 30)).view(1, 1, 30)))
             output = output[1:]
             loss = criterion(output, compSeq)
                 # print(loss)

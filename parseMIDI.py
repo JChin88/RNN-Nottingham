@@ -64,7 +64,8 @@ def noteToBin(tone):
 	return noteBin
 
 #converts a binary value list of length 16 into a note
-def binToNote(binaryList):	if len(binaryList) != 22:
+def binToNote(binaryList):
+	if len(binaryList) != 22:
 		raise ValueError('list must have length 22')
 	note = [i for i, j in enumerate(binaryList[:12]) if j == max(binaryList[:12])][0]
 	pitch = [i for i, j in enumerate(binaryList[12:]) if j == max(binaryList[12:])][0]
