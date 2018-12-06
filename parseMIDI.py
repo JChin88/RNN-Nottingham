@@ -31,8 +31,6 @@ def parseNotes(filename, tracknumber = 0, subdivisions = 2):
 
 # Parse a MIDI file by reading it by time(beats)
 def parseBeats(filename, tracknumber = 0, subdivisions = 2):
-	#TODO: implement parsing of beats
-	# Look for ticks per beat
 	sequence = []
 	mid = MidiFile(filename)
 	track = mid.tracks[tracknumber]
@@ -66,9 +64,7 @@ def noteToBin(tone):
 	return noteBin
 
 #converts a binary value list of length 16 into a note
-def binToNote(binaryList):
-	# print(binaryList)
-	if len(binaryList) != 22:
+def binToNote(binaryList):	if len(binaryList) != 22:
 		raise ValueError('list must have length 22')
 	note = [i for i, j in enumerate(binaryList[:12]) if j == max(binaryList[:12])][0]
 	pitch = [i for i, j in enumerate(binaryList[12:]) if j == max(binaryList[12:])][0]
@@ -99,23 +95,11 @@ def reconstructFromNotes(filename, sequence, tpb, subdivisions = 2):
 	mid.tracks.append(track)
 	mid.ticks_per_beat = tpb
 
-	# elapsedTime = 0
-	# noteOffs = []
-
 	for note in sequence:
 		tone, velocity, length = binToNoteLength(note, tpb, subdivisions)
 
-		# for noteOff in noteOffs:
-		# 	if noteOff[1] <= time:
-		# 		elapsedTime += noteOff[1]
-		# 		time -= noteOff[1]
-		# 		track.append(noteOff[0])
-		# 		noteOffs.remove(noteOff)
-
 		track.append(Message('note_on', note = tone, velocity = velocity, time = 0))
 		track.append(Message('note_off', note = tone, velocity = 0, time = length * int(tpb/subdivisions)))
-		# elapsedTime += time
-		# noteOffs += [(Message('note_off', note = tone, velocity = 0, time = length), length)]
 
 	mid.save('output/' + filename)
 	return mid
@@ -161,35 +145,3 @@ def reconstruct(filename, sequence, tpb, subdivisions = 2):
 
 	mid.save('output/' + filename)
 	return mid	
-
-# filename = 'MIDI/melody/ashover1.mid'
-# mid = MidiFile(filename)
-# print('\nOriginal')
-# track1 = mid.tracks[0]
-# for msg in track1:
-# 	if msg.type == 'note_on':
-# 		print(msg.note)
-# 		print(noteToBin(msg.note))
-
-# # filename = '../Parker,_Charlie_-_Donna_Lee.midi'
-# filename = 'MIDI/melody/ashover1.mid'
-# mid = MidiFile(filename)
-# print('\nOriginal')
-# track1 = mid.tracks[0]
-# for msg in track1:
-# 	print(msg)
-
-# tpb = mid.ticks_per_beat
-
-# # mid.save('output/realDonnaLee.mid')
-# mid.save('output/realAshover1.mid')
-
-# sequence = parseNotes(filename)
-# # for s in sequence:
-# # 	print(s)
-
-# print('\nReconstructed:')
-# mid = reconstructFromNotes('testAshover1.mid', sequence, tpb)
-# track2 = mid.tracks[0]
-# for msg in track2:
-# 	print(msg)
